@@ -1,5 +1,6 @@
+
 import { GoogleGenAI } from "@google/genai";
-import { ImageSize } from '../types';
+import { ImageSize } from "../types";
 
 const getClient = () => {
   const apiKey = process.env.API_KEY;
@@ -7,37 +8,6 @@ const getClient = () => {
     throw new Error("API Key not found in environment variables");
   }
   return new GoogleGenAI({ apiKey });
-};
-
-export const generateAlbumArt = async (prompt: string, size: ImageSize): Promise<string> => {
-  const ai = getClient();
-  
-  // Gemini 3 Pro Image Preview supports imageSize config
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-image-preview',
-    contents: {
-      parts: [
-        { text: prompt }
-      ]
-    },
-    config: {
-      imageConfig: {
-        aspectRatio: "1:1",
-        imageSize: size
-      }
-    }
-  });
-
-  // Extract the image from the response parts
-  if (response.candidates && response.candidates[0].content && response.candidates[0].content.parts) {
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData && part.inlineData.data) {
-        return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
-      }
-    }
-  }
-
-  throw new Error("No image generated.");
 };
 
 export const createChatStream = async (message: string, history: { role: 'user' | 'model'; parts: { text: string }[] }[]) => {
@@ -52,4 +22,35 @@ export const createChatStream = async (message: string, history: { role: 'user' 
 
   const result = await chat.sendMessageStream({ message });
   return result;
+};
+
+export const generateAlbumArt = async (prompt: string, size: ImageSize) => {
+  const ai = getClient();
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-pro-image-preview',
+    contents: {
+      parts: [
+        {
+          text: prompt,
+        },
+      ],
+    },
+    config: {
+      imageConfig: {
+          aspectRatio: "1:1",
+          imageSize: size
+      },
+    },
+  });
+
+  const parts = response.candidates?.[0]?.content?.parts;
+  if (parts) {
+      for (const part of parts) {
+        if (part.inlineData) {
+            const base64EncodeString: string = part.inlineData.data;
+            return `data:image/png;base64,${base64EncodeString}`;
+        }
+      }
+  }
+  throw new Error("No image generated");
 };

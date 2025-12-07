@@ -30,15 +30,15 @@ export type ViewState = 'SONG_LIST' | 'SUBMIT_SONG' | 'QUEUE' | 'HOST_LOGIN' | '
 
 export type SortOption = 'ARTIST' | 'TITLE' | 'DUET';
 
-export enum ImageSize {
-  Size1K = '1K',
-  Size2K = '2K',
-  Size4K = '4K'
-}
-
 export interface ChatMessage {
   id: string;
   role: 'user' | 'model';
   text: string;
   isLoading?: boolean;
+}
+
+export enum ImageSize {
+  Size1K = '1K',
+  Size2K = '2K',
+  Size4K = '4K',
 }

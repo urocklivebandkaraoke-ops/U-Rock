@@ -123,6 +123,10 @@ const App: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleSplashComplete = async () => {
+    setShowSplash(false);
+  };
+
   // Nav Button Component
   const NavButton = ({ target, icon: Icon, label, mobileOnly = false }: any) => (
     <button
@@ -138,7 +142,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      {showSplash && <SplashPage onComplete={() => setShowSplash(false)} />}
+      {showSplash && <SplashPage onComplete={handleSplashComplete} />}
       
       <div className={`flex flex-col h-screen bg-slate-900 text-slate-100 font-sans overflow-hidden transition-opacity duration-700 ${showSplash ? 'opacity-0' : 'opacity-100'}`}>
         
